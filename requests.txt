@@ -1,2 +1,4 @@
 pypiwin32
 pyautogui
+pillow
+pytesseract
