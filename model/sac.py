@@ -1,12 +1,15 @@
 import torch
+import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributions as D
 import numpy as np
 import logging
+import time
 from copy import deepcopy
 from model.general import MLP
 from model.resnet import ResNet18
+from utils.utils import get_time
 
 class Actor(nn.Module):
     def __init__(self, f_dim, a_dim):
@@ -93,9 +96,9 @@ class SAC(nn.Module):
         return feature
 
     def learn(self):
-        if self.pointer < self.ARGS.MEMORY_CAPACITY: 
+        if self.pointer < self.ARGS.BATCH_SIZE: 
             return
-        indices = np.random.choice(self.ARGS.MEMORY_CAPACITY, size=self.ARGS.BATCH_SIZE)
+        indices = np.random.choice(min(self.ARGS.MEMORY_CAPACITY, self.pointer), size=self.ARGS.BATCH_SIZE)
         state = self.memory['state'][indices, :]
         action = self.memory['action'][indices, :]
         state_ = self.memory['state_'][indices, :]
@@ -153,3 +156,7 @@ class SAC(nn.Module):
             self.pointer += 1
             if self.pointer == self.ARGS.MEMORY_CAPACITY:
                 logging.info('回放池满，开始训练')
+            if self.pointer % self.ARGS.MEMORY_CAPACITY == 0:
+                with open(f'checkpoint/memory/{get_time()}.bin', 'wb') as f:
+                    pickle.dump(self.memory, f)
+p

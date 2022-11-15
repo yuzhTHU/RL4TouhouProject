@@ -2,6 +2,7 @@ import random
 import numpy as np
 import torch
 import argparse
+from datetime import datetime
 
 
 def get_args(**kwargs):
@@ -13,9 +14,11 @@ def get_args(**kwargs):
     parser.add_argument("--LOAD_MODEL", type=str, default=None)
     parser.add_argument("--SEED", type=int, default=42)
     parser.add_argument("--DEVICE", type=str, default="cpu")
-    parser.add_argument("--MEMORY_CAPACITY", type=int, default=2000)
+    parser.add_argument("--MEMORY_CAPACITY", type=int, default=10000)
     parser.add_argument("--MODEL", type=str, default="PPO")
-    parser.add_argument("--TRAIN", type=bool, default=True)
+    parser.add_argument("--EPISODE", type=int, default=2000)
+    parser.add_argument("--MAX_EP", type=int, default=20000)
+
 
     # 强化学习模型公用参数
     parser.add_argument("--F_DIM", type=int, default=256)
@@ -52,3 +55,6 @@ def set_seed(seed):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
+
+def get_time():
+    datetime.now().strftime('%Y%b%d_%H%M')
